@@ -4,21 +4,18 @@ const btnSearch = document.querySelector("#submit");
 const alerta = document.querySelector("#alerta");
 const clear = document.querySelector("#clear");
 var local = document.querySelector("#localizado");
-
-function initMap() {
-    const map = new google.maps.Map(document.getElementById("map"));
-}
-document.addEventListener("DOMContentLoaded", initMap, false);
+const key = "https://maps.googleapis.com/maps/api/js?key=SUA_CHAVE_GOOGLE_API_AQUI&callback&v=weekly";
+const callApi = document.createElement("script");
+callApi.src = key;
 
 // EVENTO PARA CARREGAR E EXECUTAR A FUNÇÃO QUE EXIBE PESQUISAS ARMAZENADAS NO LOCALSTORAGE
-window.addEventListener("DOMContentLoaded", exibeStorage, false);
-
 function exibeStorage() {
     if (localStorage.pesquisa) {
         local.innerHTML = `<p class="paragrafo">Pesquisa salva: ${localStorage.pesquisa} 
         <i class="bi bi-search" onclick="rePesquise();" id="research"></i>
         <i class="bi bi-trash-fill" id="clear" onclick="limpa_register();"></i>
         </p>`;
+        document.body.appendChild(callApi).defer;
     }
     else {
         local.innerHTML = "Olá, você não tem nenhuma pesquisa salva";
@@ -27,11 +24,16 @@ function exibeStorage() {
         })
     }
 }
+exibeStorage();
 
+// Evento para indexar o google maps na página
+userCep.addEventListener("click", (e) => {
+    document.body.appendChild(callApi).defer;
+})
 btnSearch.addEventListener("click", (e) => {
+    //Insere script no documento e carrega o conteúdo.
     pesquisacep(this.value);
 })
-
 function limpa_search() {
     //Limpa valores pesquisado de cep.
     local.style.display = "none";
@@ -100,14 +102,13 @@ function meu_callback(conteudo) {
 }
 
 function pesquisacep(valor) {
-
     //Nova variável "cep" somente com dígitos.
     valor = userCep.value;
     var cep = valor.replace(/\D/g, '');
 
     //Verifica se campo cep possui valor informado.
     if (cep != "") {
-
+        
         //Expressão regular para validar o CEP.
         var validacep = /^[0-9]{8}$/;
 
@@ -116,6 +117,7 @@ function pesquisacep(valor) {
 
             // Aqui são as funções para o Google Maps
             // Inicializar e adicionar o mapa
+
             const geocoder = new google.maps.Geocoder();
             const map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 13,
@@ -159,4 +161,3 @@ function pesquisacep(valor) {
         alerta.innerHTML = "";
     })
 };
-
